@@ -10,38 +10,23 @@ import { Showing } from '../../showings/entities/showing.entity';
 
 @Entity('films')
 export class Film {
-  @ApiProperty({
-    example: '550e8400-e29b-41d4-a716-446655440000',
-    description: 'UUID',
-  })
+  @ApiProperty({ example: '550e8400-e29b-41d4-a716-446655440000', description: 'Film UUID' })
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @ApiProperty({
-    example: 'Interstellar',
-    description: 'Name film',
-  })
+  @ApiProperty({ example: 'Interstellar', description: 'Film title' })
   @Column({ type: 'varchar', length: 255 })
   title: string;
 
-  @ApiProperty({
-    example: 169,
-    description: 'Duration film',
-  })
+  @ApiProperty({ example: 169, description: 'Duration in minutes' })
   @Column({ type: 'int' })
   duration: number;
 
-  @ApiProperty({
-    example: 'Sci-Fi',
-    description: 'Genre film',
-  })
+  @ApiProperty({ example: 'Sci-Fi', description: 'Film genre' })
   @Column({ type: 'varchar', length: 100 })
   genre: string;
 
-  @ApiProperty({
-    example: '2026-10-15T12:00:00.000Z',
-    description: 'Date created',
-  })
+  @ApiProperty({ example: '2026-10-15T12:00:00.000Z', description: 'Date created' })
   @CreateDateColumn({ type: 'timestamptz' })
   createdAt: Date;
 

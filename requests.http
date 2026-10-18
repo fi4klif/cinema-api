@@ -1,0 +1,175 @@
+@baseUrl = http://localhost:3000
+
+### ==========================
+### FILMS
+### ==========================
+
+### Create a film (Positive)
+# @name createFilm
+POST {{baseUrl}}/films
+Content-Type: application/json
+
+{
+  "title": "Inception",
+  "duration": 148,
+  "genre": "Sci-Fi"
+}
+
+### Save film ID
+@filmId = {{createFilm.response.body.id}}
+
+### Get all films
+GET {{baseUrl}}/films
+
+### Create a film with validation error (Negative - 400 Bad Request)
+POST {{baseUrl}}/films
+Content-Type: application/json
+
+{
+  "title": "",
+  "duration": -10,
+  "genre": ""
+}
+
+
+### ==========================
+### HALLS
+### ==========================
+
+### Create a hall (Positive)
+# @name createHall
+POST {{baseUrl}}/halls
+Content-Type: application/json
+
+{
+  "name": "IMAX 5D",
+  "rows": 10,
+  "seatsPerRow": 15
+}
+
+### Save hall ID
+@hallId = {{createHall.response.body.id}}
+
+### Get all halls
+GET {{baseUrl}}/halls
+
+### Get a specific hall with seats (Positive)
+GET {{baseUrl}}/halls/{{hallId}}
+
+### Create a hall with an existing name (Negative - 409 Conflict)
+POST {{baseUrl}}/halls
+Content-Type: application/json
+
+{
+  "name": "IMAX 5D",
+  "rows": 5,
+  "seatsPerRow": 10
+}
+
+### ==========================
+### SHOWINGS
+### ==========================
+
+### Create a showing (Positive)
+# @name createShowing
+POST {{baseUrl}}/showings
+Content-Type: application/json
+
+{
+  "filmId": "{{filmId}}",
+  "hallId": "{{hallId}}",
+  "price": 25000,
+  "startsAt": "2027-12-01T18:00:00.000Z"
+}
+
+### Save showing ID
+@showingId = {{createShowing.response.body.id}}
+
+### Create a showing with a non-existent film (Negative - 400 Bad Request)
+POST {{baseUrl}}/showings
+Content-Type: application/json
+
+{
+  "filmId": "123e4567-e89b-12d3-a456-426614174000",
+  "hallId": "{{hallId}}",
+  "price": 15000,
+  "startsAt": "2027-12-01T18:00:00.000Z"
+}
+
+### Create a showing in the past (Negative - 400 Bad Request)
+POST {{baseUrl}}/showings
+Content-Type: application/json
+
+{
+  "filmId": "{{filmId}}",
+  "hallId": "{{hallId}}",
+  "price": 15000,
+  "startsAt": "2020-01-01T10:00:00.000Z"
+}
+
+### Get all showings (with filter)
+GET {{baseUrl}}/showings?filmId={{filmId}}&date=2027-12-01
+
+### Get all seats for a specific showing
+GET {{baseUrl}}/showings/{{showingId}}/seats
+
+
+### ==========================
+### BOOKINGS
+### ==========================
+
+### Book seats (Positive)
+# @name createBooking
+POST {{baseUrl}}/showings/{{showingId}}/bookings
+Content-Type: application/json
+
+{
+  "seats": [
+    { "row": 6, "seat": 7 },
+    { "row": 6, "seat": 8 }
+  ]
+}
+
+### Save booking ID
+@bookingId = {{createBooking.response.body.id}}
+
+### Book the same seats again (Negative - 409 Conflict)
+POST {{baseUrl}}/showings/{{showingId}}/bookings
+Content-Type: application/json
+
+{
+  "seats": [
+    { "row": 5, "seat": 7 }
+  ]
+}
+
+
+### Book seats out of hall bounds (Negative - 400 Bad Request)
+POST {{baseUrl}}/showings/{{showingId}}/bookings
+Content-Type: application/json
+
+{
+  "seats": [
+    { "row": 99, "seat": 99 }
+  ]
+}
+
+### Get all bookings
+GET {{baseUrl}}/bookings
+
+### Get bookings for a specific showing
+GET {{baseUrl}}/showings/{{showingId}}/bookings
+
+
+### ==========================
+### DELETION (Cascade and conflict checks)
+### ==========================
+
+### Attempt to delete a hall that has showings (Negative - 409 Conflict)
+DELETE {{baseUrl}}/halls/{{hallId}}
+
+### Delete a booking (Positive - 204 No Content)
+DELETE {{baseUrl}}/bookings/{{bookingId}}
+
+### Check: Get showing seats (seats 5/7 and 5/8 should become free)
+GET {{baseUrl}}/showings/{{showingId}}/seats
