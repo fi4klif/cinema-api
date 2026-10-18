@@ -125,4 +125,12 @@ export class ShowingsService {
 
     return seats;
   }
+
+  async remove(id: string): Promise<void> {
+    const showing = await this.showingsRepository.findOne({ where: { id } });
+    if (!showing) {
+      throw new NotFoundException(`Showing with ID ${id} not found`);
+    }
+    await this.showingsRepository.remove(showing);
+  }
 }

@@ -66,6 +66,7 @@ Content-Type: application/json
   "seatsPerRow": 10
 }
 
+
 ### ==========================
 ### SHOWINGS
 ### ==========================
@@ -107,10 +108,16 @@ Content-Type: application/json
   "startsAt": "2020-01-01T10:00:00.000Z"
 }
 
-### Get all showings (with filter)
+### Get all showings (NO filters - Positive)
+GET {{baseUrl}}/showings
+
+### Get all showings (WITH filters - Positive)
 GET {{baseUrl}}/showings?filmId={{filmId}}&date=2027-12-01
 
-### Get all seats for a specific showing
+### Get a specific showing by ID (Positive)
+GET {{baseUrl}}/showings/{{showingId}}
+
+### Get all seats for a specific showing (Positive)
 GET {{baseUrl}}/showings/{{showingId}}/seats
 
 
@@ -139,10 +146,9 @@ Content-Type: application/json
 
 {
   "seats": [
-    { "row": 5, "seat": 7 }
+    { "row": 6, "seat": 7 }
   ]
 }
-
 
 ### Book seats out of hall bounds (Negative - 400 Bad Request)
 POST {{baseUrl}}/showings/{{showingId}}/bookings
@@ -171,5 +177,11 @@ DELETE {{baseUrl}}/halls/{{hallId}}
 ### Delete a booking (Positive - 204 No Content)
 DELETE {{baseUrl}}/bookings/{{bookingId}}
 
-### Check: Get showing seats (seats 5/7 and 5/8 should become free)
+### Check: Get showing seats (seats 6/7 and 6/8 should become free)
 GET {{baseUrl}}/showings/{{showingId}}/seats
+
+### Delete a showing (Positive - 204 No Content)
+DELETE {{baseUrl}}/showings/{{showingId}}
+
+### Check: Delete showing again (Negative - 404 Not Found)
+DELETE {{baseUrl}}/showings/{{showingId}}

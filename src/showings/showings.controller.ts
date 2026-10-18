@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Query, Delete, HttpCode, HttpStatus } from '@nestjs/common';
 import { ShowingsService } from './showings.service';
 import { CreateShowingDto } from './dto/create-showing.dto';
 import { GetShowingsQueryDto } from './dto/get-showings-query.dto';
@@ -41,5 +41,14 @@ export class ShowingsController {
   @ApiResponse({ status: 404, description: 'Showing not found.' })
   getSeats(@Param('id') id: string) {
     return this.showingsService.getSeats(id);
+  }
+
+  @Delete(':id')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({ summary: 'Delete a showing by ID' })
+  @ApiResponse({ status: 204, description: 'The showing has been successfully deleted.' })
+  @ApiResponse({ status: 404, description: 'Showing not found.' })
+  async remove(@Param('id') id: string): Promise<void> {
+    await this.showingsService.remove(id);
   }
 }
